@@ -8,7 +8,7 @@ const productRoutes = require('./routes/products');
 const storeRoutes = require('./routes/stores');
 const offerRoutes = require('./routes/offers');
 
-
+//
 //connect to MongoDB via mongoose
 mongoose.connect('mongodb://sam:3821869@cluster0-shard-00-00-jqqte.mongodb.net:27017,cluster0-shard-00-01-jqqte.mongodb.net:27017,cluster0-shard-00-02-jqqte.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin');
 mongoose.Promise = global.Promise;
