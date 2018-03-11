@@ -1,7 +1,11 @@
+const constants = require("./constants")
+
 const http = require('http');
 const app = require('./app');
 
-const port =  process.env.PORT || 3000;
+console.log(constants.API_PORT);
+
+const port =  process.env.PORT || constants.API_PORT;
 
 const server = http.createServer(app);
 

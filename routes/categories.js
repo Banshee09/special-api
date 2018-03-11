@@ -1,10 +1,8 @@
 const express = require('express');
-const router  = express.Router();
+const router = express.Router();
 const mongoose = require('mongoose');
-const constants = require("../constants");
 const Category = require('../models/category');
-// const Product = require('../models/product');
-
+const constants = require("../constants");
 
 router.get('/', (req, res, next) => {
 
@@ -12,12 +10,12 @@ router.get('/', (req, res, next) => {
 
     query.exec().then(docs => {
         const response = {
-            count: docs.length,
+            message: `${docs.length} categories found`,
             categories: docs.map(doc => {
                 return {
                     _id: doc._id,
                     name: doc.name,
-                    requests: constants.getAPI('GETALL', 'categories', doc._id)
+                    requests: constants.getAPI('categories', doc._id)
                 }
             }),
         };
@@ -26,14 +24,15 @@ router.get('/', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'categories')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('categories')
         };
 
         res.status(500).json(response);
     });
 
 });
+
 
 router.post('/', (req, res, next) => {
 
@@ -46,21 +45,21 @@ router.post('/', (req, res, next) => {
 
         const response = {
             message: 'Category created successfully',
-            requests:constants.getAPI('POST', 'categories', result._id)
+            requests: constants.getAPI('categories', result._id)
         };
 
         res.status(201).json(response);
 
     }).catch(err => {
+        console.log(err);
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'categories')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('categories')
         };
 
         res.status(500).json(response);
     });
 });
-
 
 
 router.get('/:categoryId', (req, res, next) => {
@@ -70,19 +69,19 @@ router.get('/:categoryId', (req, res, next) => {
 
     query.exec().then(doc => {
 
-        if(doc){
+        if (doc) {
             const response = {
-                _id : doc._id,
+                _id: doc._id,
                 name: doc.name,
-                requests: constants.getAPI('GET', 'categories', doc._id)
+                requests: constants.getAPI('categories', doc._id)
             };
 
             res.status(200).json(response);
         }
-        else{
+        else {
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'categories')
+                message: `Error - cateogryId ${categoryId} not found in Database`,
+                requests: constants.getAPI('categories')
             };
 
             res.status(404).json(response);
@@ -90,8 +89,8 @@ router.get('/:categoryId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'categories')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('categories')
         };
 
         res.status(500).json(response);
@@ -102,24 +101,24 @@ router.get('/:categoryId', (req, res, next) => {
 router.patch('/:categoryId', (req, res, next) => {
     const categoryId = req.params.categoryId;
     const updateOps = {};
-    for(const ops of req.body){
+    for (const ops of req.body) {
         updateOps[ops.key] = ops.value;
     }
-    const query = Category.findByIdAndUpdate(categoryId, {$set: updateOps});
+    const query = Category.findByIdAndUpdate(categoryId, { $set: updateOps });
 
     query.exec().then(result => {
-        if(result) {
+        if (result) {
             const response = {
                 message: 'Category updated successfully',
-                requests: constants.getAPI('PATCH', 'categories', result._id)
+                requests: constants.getAPI('categories', result._id)
             };
 
             res.status(200).json(response);
         }
-        else{
+        else {
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'categories')
+                error: `Error - cateogryId ${categoryId} not found in Database`,
+                requests: constants.getAPI('categories')
             };
 
             res.status(404).json(response);
@@ -127,8 +126,8 @@ router.patch('/:categoryId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'categories')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('categories')
         };
 
         res.status(500).json(response);
@@ -141,18 +140,18 @@ router.delete('/:categoryId', (req, res, next) => {
     const query = Category.findByIdAndRemove(categoryId);
 
     query.exec().then(result => {
-        if(result) {
+        if (result) {
             const response = {
                 message: 'Category deleted successfully',
-                requests: constants.getAPI('DELETE', 'categories', result._id)
+                requests: constants.getAPI('categories')
             };
 
             res.status(200).json(response);
         }
-        else{
+        else {
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'categories')
+                error: `Error - cateogryId ${categoryId} not found in Database`,
+                requests: constants.getAPI('categories')
             };
 
             res.status(404).json(response);
@@ -160,13 +159,14 @@ router.delete('/:categoryId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'categories')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('categories')
         };
 
         res.status(500).json(response);
     });
 });
+
 
 module.exports = router;
 

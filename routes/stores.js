@@ -11,13 +11,13 @@ router.get('/', (req, res, next) => {
 
     query.exec().then(docs => {
         const response = {
-            count: docs.length,
+            message: `${docs.length} stores found`,
             stores: docs.map(doc => {
                 return {
                     _id: doc._id,
                     name: doc.name,
                     location: doc.location,
-                    requests: constants.getAPI('GETALL', 'stores', doc._id)
+                    requests: constants.getAPI('stores', doc._id)
                 }
             }),
         };
@@ -26,7 +26,7 @@ router.get('/', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
+            message: `Error - ${err}`,
             requests: constants.getAPI('', 'stores')
         };
 
@@ -47,15 +47,15 @@ router.post('/', (req, res, next) => {
 
         const response = {
             message: 'Store created successfully',
-            requests:constants.getAPI('POST', 'stores', result._id)
+            requests:constants.getAPI('stores', result._id)
         };
 
         res.status(201).json(response);
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'stores')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('stores')
         };
 
         res.status(500).json(response);
@@ -76,15 +76,15 @@ router.get('/:storeId', (req, res, next) => {
                 _id : doc._id,
                 name: doc.name,
                 location: doc.location,
-                requests: constants.getAPI('GET', 'stores', doc._id)
+                requests: constants.getAPI('stores', doc._id)
             };
 
             res.status(200).json(response);
         }
         else{
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'stores')
+                message: `Error - storeId ${storeId} not found in Database`,
+                requests: constants.getAPI('stores')
             };
 
             res.status(404).json(response);
@@ -92,8 +92,8 @@ router.get('/:storeId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'stores')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('stores')
         };
 
         res.status(500).json(response);
@@ -116,15 +116,15 @@ router.patch('/:storeId', (req, res, next) => {
         if(result) {
             const response = {
                 message: 'Store updated successfully',
-                requests: constants.getAPI('PATCH', 'stores', result._id)
+                requests: constants.getAPI('stores', result._id)
             };
 
             res.status(200).json(response);
         }
         else{
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'stores')
+                message: `Error - storeId ${storeId} not found in Database`,
+                requests: constants.getAPI('stores')
             };
 
             res.status(404).json(response);
@@ -132,7 +132,7 @@ router.patch('/:storeId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
+            message: `Error - ${err}`,
             requests: constants.getAPI('', 'stores')
         };
 
@@ -156,7 +156,7 @@ router.delete('/:storeId', (req, res, next) => {
         }
         else{
             const response = {
-                error: 'ID not found in Database',
+                message: `Error - storeId ${storeId} not found in Database`,
                 requests: constants.getAPI('', 'stores')
             };
 
@@ -165,7 +165,7 @@ router.delete('/:storeId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
+            message: `Error - ${err}`,
             requests: constants.getAPI('', 'stores')
         };
 

@@ -11,7 +11,7 @@ router.get('/', (req, res, next) => {
 
     query.exec().then(docs => {
         const response = {
-            count: docs.length,
+            message: `${docs.length} offers found`,
             offers: docs.map(doc => {
                 return {
                     _id: doc._id,
@@ -19,7 +19,7 @@ router.get('/', (req, res, next) => {
                     date: doc.date,
                     product: doc.product,
                     store: doc.store,
-                    requests: constants.getAPI('GETALL', 'offers', doc._id)
+                    requests: constants.getAPI('offers', doc._id)
                 }
             }),
         };
@@ -28,8 +28,8 @@ router.get('/', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'offers')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('offers')
         };
 
         res.status(500).json(response);
@@ -52,15 +52,15 @@ router.post('/', (req, res, next) => {
 
         const response = {
             message: 'Offer created successfully',
-            requests:constants.getAPI('POST', 'offers', result._id)
+            requests:constants.getAPI('offers', result._id)
         };
 
         res.status(201).json(response);
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'offers')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('offers')
         };
 
         res.status(500).json(response);
@@ -90,8 +90,8 @@ router.get('/:offerId', (req, res, next) => {
         }
         else{
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'offers')
+                message: `Error - offerId ${offerId} not found in Database`,
+                requests: constants.getAPI('offers')
             };
 
             res.status(404).json(response);
@@ -99,8 +99,8 @@ router.get('/:offerId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'offers')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('offers')
         };
 
         res.status(500).json(response);
@@ -120,15 +120,15 @@ router.patch('/:offerId', (req, res, next) => {
         if(result) {
             const response = {
                 message: 'Offer updated successfully',
-                requests: constants.getAPI('PATCH', 'offers', result._id)
+                requests: constants.getAPI('offers', result._id)
             };
 
             res.status(200).json(response);
         }
         else{
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'offers')
+                message: `Error - offerId ${offerId} not found in Database`,
+                requests: constants.getAPI('offers')
             };
 
             res.status(404).json(response);
@@ -136,7 +136,7 @@ router.patch('/:offerId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
+            message: `Error - ${err}`,
             requests: constants.getAPI('', 'offers')
         };
 
@@ -153,15 +153,15 @@ router.delete('/:offerId', (req, res, next) => {
         if(result) {
             const response = {
                 message: 'Offer deleted successfully',
-                requests: constants.getAPI('DELETE', 'offers', result._id)
+                requests: constants.getAPI('offers', result._id)
             };
 
             res.status(200).json(response);
         }
         else{
             const response = {
-                error: 'ID not found in Database',
-                requests: constants.getAPI('', 'offers')
+                message: `Error - offerId ${offerId} not found in Database`,
+                requests: constants.getAPI('offers')
             };
 
             res.status(404).json(response);
@@ -169,8 +169,8 @@ router.delete('/:offerId', (req, res, next) => {
 
     }).catch(err => {
         const response = {
-            error: err,
-            requests: constants.getAPI('', 'offers')
+            message: `Error - ${err}`,
+            requests: constants.getAPI('offers')
         };
 
         res.status(500).json(response);

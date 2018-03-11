@@ -1,147 +1,59 @@
-module.exports = {
-    localURL: "http://localhost:3000",
+const SERVER_URL = "10.1.1.14";
+const API_PORT = 3000;
+const API_URL = `http://${SERVER_URL}:${API_PORT}`;
+const DB_URL = `mongodb://localhost/special-api`;
+//const DB_URL = 'mongodb://sam:3821869@cluster0-shard-00-00-jqqte.mongodb.net:27017,cluster0-shard-00-01-jqqte.mongodb.net:27017,cluster0-shard-00-02-jqqte.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin'
 
-    getAPI(type, route, id){
-        switch(type){
-            case 'GETALL':
-                return replyGetAll(route, id);
-                break;
-            case 'POST':
-                return replyPost(route, id);
-                break;
-            case 'GET':
-                return replyGet(route, id);
-                break;
-            case 'PATCH':
-                return replyPatch(route, id);
-                break;
-            case 'DELETE':
-                return replyUsage(route);
-                break;
-            default:
-                return replyUsage(route);
+
+
+function getUsage(route, id='_id') {
+    const response = [
+        {
+            Method: 'GET',
+            URL: `${API_URL}/${route}`
+        },
+        {
+            Method: 'POST',
+            URL: `${API_URL}/${route}`
+        },
+        {
+            Method: 'GET',
+            URL: `${API_URL}/${route}/${id}`
+        },
+        {
+            Method: 'PATCH',
+            URL: `${API_URL}/${route}/${id}`
+        },
+        {
+            Method: 'DELETE',
+            URL: `${API_URL}/${route}/${id}`
         }
+    ]
+    return response;
+}
 
+
+
+module.exports = {
+    DB_URL: DB_URL,
+    API_PORT: API_PORT,
+
+    getAPI(route, id) {
+        switch (route) {
+            case 'categories':
+                return getUsage(route, id);
+
+            case 'products':
+                return getUsage(route, id);
+
+            case 'stores':
+                return getUsage(route, id);
+
+            case 'offers':
+                return getUsage(route, id);
+
+            default:
+                return '';
+        }
     }
 };
-
-const localURL = "http://localhost:3000";
-
-function replyGetAll(route, id){
-    const response = [
-        {
-            Method: 'POST',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'PATCH',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'DELETE',
-            URL: `${localURL}/${route}/${id}`
-        }
-    ]
-    return response;
-}
-
-
-function replyPost(route, id){
-    const response = [
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'PATCH',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'DELETE',
-            URL: `${localURL}/${route}/${id}`
-        }
-    ]
-    return response;
-
-}
-
-function replyGet(route, id){
-    const response = [
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'POST',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'PATCH',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'DELETE',
-            URL: `${localURL}/${route}/${id}`
-        }
-    ]
-    return response;
-
-}
-
-function replyPatch(route, id){
-    const response = [
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'POST',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}/${id}`
-        },
-        {
-            Method: 'DELETE',
-            URL: `${localURL}/${route}/${id}`
-        }
-    ]
-    return response;
-
-}
-
-
-function replyUsage(route){
-    const response = [
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'POST',
-            URL: `${localURL}/${route}`
-        },
-        {
-            Method: 'GET',
-            URL: `${localURL}/${route}/_id`
-        },
-        {
-            Method: 'PATCH',
-            URL: `${localURL}/${route}/_id`
-        },
-        {
-            Method: 'DELETE',
-            URL: `${localURL}/${route}/_id`
-        }
-    ]
-    return response;
-}
