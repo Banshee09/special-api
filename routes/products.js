@@ -36,6 +36,38 @@ router.get('/', (req, res, next) => {
 
 });
 
+router.get('/:categoryId/products', (req, res, next) => {
+    const categoryId = req.params.categoryId;
+
+    const query = Product.find({category:categoryId}).select('_id name barcode category');
+
+    query.exec().then(docs => {
+        const response = {
+            message: `${docs.length} products found`,
+            products: docs.map(doc => {
+                return {
+                    _id: doc._id,
+                    name: doc.name,
+                    barcode: doc.barcode,
+                    category: doc.category,
+                    requests: constants.getAPI('products', doc._id)
+                }
+            }),
+        };
+
+        res.status(200).json(response);
+
+    }).catch(err => {
+        const response = {
+            message: `Error - ${err}`,
+            requests: constants.getAPI('products')
+        };
+
+        res.status(500).json(response);
+    });
+
+});
+
 router.post('/', (req, res, next) => {
 
     const product = new Product({
