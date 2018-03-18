@@ -37,6 +37,39 @@ router.get('/', (req, res, next) => {
 
 });
 
+router.get('/:productId/offers', (req, res, next) => {
+
+    const productId = req.params.productId;
+    const query = Offer.find({product:productId}).select('_id price date product store');
+
+    query.exec().then(docs => {
+        const response = {
+            message: `${docs.length} offers found`,
+            offers: docs.map(doc => {
+                return {
+                    _id: doc._id,
+                    price: doc.price,
+                    date: doc.date.toLocaleString(),
+                    product: doc.product,
+                    store: doc.store,
+                    requests: constants.getAPI('offers', doc._id)
+                }
+            }),
+        };
+
+        res.status(200).json(response);
+
+    }).catch(err => {
+        const response = {
+            message: `Error - ${err}`,
+            requests: constants.getAPI('offers')
+        };
+
+        res.status(500).json(response);
+    });
+
+});
+
 router.post('/', (req, res, next) => {
 
     const offer = new Offer({
@@ -114,6 +147,8 @@ router.patch('/:offerId', (req, res, next) => {
     for(const ops of req.body){
         updateOps[ops.key] = ops.value;
     }
+    updateOps["date"] = new Date();
+    
     const query = Offer.findByIdAndUpdate(offerId, {$set: updateOps});
 
     query.exec().then(result => {
