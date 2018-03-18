@@ -1,7 +1,7 @@
 {
   "name": "special-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "RESTful API for Special Offers project",
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js"
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
     "express": "^4.16.2",
     "mongoose": "^5.0.0-rc2",
     "morgan": "^1.9.0",

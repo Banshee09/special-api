@@ -23,22 +23,16 @@ app.use('/uploads', express.static('uploads'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//resolve cors errors
-app.use('/', (req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Headers', '*');
-    if (req.method === 'OPTIONS') {
-        res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-        return res.status(200).json({});
-    }
-    next();
-});
-
+//enable cors
+const cors = require('cors');
+app.use(cors());
 
 //set up routes
 app.use('/categories', categoryRoutes);
-app.use('/products', productRoutes);
+app.use('/category', productRoutes);
 app.use('/stores', storeRoutes);
+app.use('/products', productRoutes);
+app.use('/product', offerRoutes);
 app.use('/offers', offerRoutes);
 
 app.use((req, res, next) => {

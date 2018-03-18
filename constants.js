@@ -1,10 +1,8 @@
-const SERVER_URL = "10.1.1.14";
 const API_PORT = 3000;
-const API_URL = `http://${SERVER_URL}:${API_PORT}`;
-const DB_URL = `mongodb://localhost/special-api`;
-//const DB_URL = 'mongodb://sam:3821869@cluster0-shard-00-00-jqqte.mongodb.net:27017,cluster0-shard-00-01-jqqte.mongodb.net:27017,cluster0-shard-00-02-jqqte.mongodb.net:27017/test?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin'
-
-
+//const API_URL = "http://localhost:3000"
+const API_URL = 'http://special-api.ap-southeast-2.elasticbeanstalk.com';
+//const DB_URL = `mongodb://localhost/special-api`;
+const DB_URL = 'mongodb://sam:3821869@cluster0-shard-00-00-jqqte.mongodb.net:27017,cluster0-shard-00-01-jqqte.mongodb.net:27017,cluster0-shard-00-02-jqqte.mongodb.net:27017/special-api?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin'
 
 function getUsage(route, id='_id') {
     const response = [
@@ -33,11 +31,9 @@ function getUsage(route, id='_id') {
 }
 
 
-
 module.exports = {
     DB_URL: DB_URL,
     API_PORT: API_PORT,
-
     getAPI(route, id) {
         switch (route) {
             case 'categories':
