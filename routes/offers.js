@@ -1,13 +1,16 @@
+import { checkServerIdentity } from 'tls';
+
 const express = require('express');
 const router  = express.Router();
 const mongoose = require('mongoose');
 const constants = require("../constants");
 const Offer = require('../models/offer');
+const moment = require('moment-timezone');
 
 
 router.get('/', (req, res, next) => {
 
-    const query = Offer.find().select('_id price date product store');
+    const query = Offer.find().select('_id price date product store').sort('price');
 
     query.exec().then(docs => {
         const response = {
@@ -16,7 +19,7 @@ router.get('/', (req, res, next) => {
                 return {
                     _id: doc._id,
                     price: doc.price,
-                    date: doc.date,
+                    date: moment(doc.date).tz('Australia/Sydney').format("DD/MM/YYYY HH:mm:ss"),
                     product: doc.product,
                     store: doc.store,
                     requests: constants.getAPI('offers', doc._id)
@@ -40,7 +43,7 @@ router.get('/', (req, res, next) => {
 router.get('/:productId/offers', (req, res, next) => {
 
     const productId = req.params.productId;
-    const query = Offer.find({product:productId}).select('_id price date product store');
+    const query = Offer.find({product:productId}).select('_id price date product store').sort('price');
 
     query.exec().then(docs => {
         const response = {
@@ -49,7 +52,7 @@ router.get('/:productId/offers', (req, res, next) => {
                 return {
                     _id: doc._id,
                     price: doc.price,
-                    date: doc.date.toLocaleString(),
+                    date: moment(doc.date).tz('Australia/Sydney').format("DD/MM/YYYY HH:mm:ss"),
                     product: doc.product,
                     store: doc.store,
                     requests: constants.getAPI('offers', doc._id)
@@ -91,8 +94,15 @@ router.post('/', (req, res, next) => {
         res.status(201).json(response);
 
     }).catch(err => {
+        
+        let message = '';
+        if(err.code === 11000)
+            message = 'Error - There is an existing offer of this product in this store, please update it rather than create a new one.'
+        else
+            message = `Error - ${err.message}`
+        
         const response = {
-            message: `Error - ${err}`,
+            message: message,
             requests: constants.getAPI('offers')
         };
 

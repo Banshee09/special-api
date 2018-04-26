@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const constants = require("../constants");
 const Product = require('../models/product');
+const Offer = require('../models/offer');
 
 
 router.get('/', (req, res, next) => {
@@ -39,7 +40,7 @@ router.get('/', (req, res, next) => {
 router.get('/:categoryId/products', (req, res, next) => {
     const categoryId = req.params.categoryId;
 
-    const query = Product.find({category:categoryId}).select('_id name barcode category');
+    const query = Product.find({ category: categoryId }).select('_id name barcode category');
 
     query.exec().then(docs => {
         const response = {
@@ -175,26 +176,40 @@ router.patch('/:productId', (req, res, next) => {
 
 router.delete('/:productId', (req, res, next) => {
     const productId = req.params.productId;
-    const query = Product.findByIdAndRemove(productId);
 
-    query.exec().then(result => {
+    const foreginCheckQuery = Offer.findOne({ product: productId });
+
+    foreginCheckQuery.exec().then(result => {
         if (result) {
             const response = {
-                message: 'Product deleted successfully',
-                requests: constants.getAPI('DELETE', 'products', result._id)
-            };
-
-            res.status(200).json(response);
-        }
-        else {
-            const response = {
-                message: `Error - productId ${productId} not found in Database`,
+                message: 'Can not delete the Product that is referencing by some Offers',
                 requests: constants.getAPI('products')
             };
-
-            res.status(404).json(response);
+            res.status(500).json(response);
         }
+        else {
+            const query = Product.findByIdAndRemove(productId);
 
+            query.exec().then(result => {
+                if (result) {
+                    const response = {
+                        message: 'Product deleted successfully',
+                        requests: constants.getAPI('DELETE', 'products', result._id)
+                    };
+
+                    res.status(200).json(response);
+                }
+                else {
+                    const response = {
+                        message: `Error - productId ${productId} not found in Database`,
+                        requests: constants.getAPI('products')
+                    };
+
+                    res.status(404).json(response);
+                }
+
+            })
+        }
     }).catch(err => {
         const response = {
             message: `Error - ${err}`,

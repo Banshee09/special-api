@@ -8,7 +8,6 @@ const offerSchema = mongoose.Schema({
     store: {type: mongoose.Schema.Types.ObjectId, ref: 'Store', required: true}
 });
 
-offerSchema.index({store:1});
-offerSchema.index({product:1});
+offerSchema.index({ store: 1, product: -1 }, { unique: true })
 
 module.exports = mongoose.model('Offer', offerSchema);

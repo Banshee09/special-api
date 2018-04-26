@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Category = require('../models/category');
+const Product = require("../models/product");
 const constants = require("../constants");
 
 router.get('/', (req, res, next) => {
@@ -51,9 +52,14 @@ router.post('/', (req, res, next) => {
         res.status(201).json(response);
 
     }).catch(err => {
-        console.log(err);
+        let message = '';
+        if(err.code === 11000)
+            message = `Error - There is an existing category called ${req.body.name}`
+        else
+            message = `Error - ${err.message}`
+
         const response = {
-            message: `Error - ${err}`,
+            message: message,
             requests: constants.getAPI('categories')
         };
 
@@ -137,26 +143,39 @@ router.patch('/:categoryId', (req, res, next) => {
 
 router.delete('/:categoryId', (req, res, next) => {
     const categoryId = req.params.categoryId;
-    const query = Category.findByIdAndRemove(categoryId);
+    const foreginCheckQuery = Product.findOne({category: categoryId});
 
-    query.exec().then(result => {
-        if (result) {
+    foreginCheckQuery.exec().then(result =>{
+        if(result){
             const response = {
-                message: 'Category deleted successfully',
+                message: 'Can not delete the Category that is referencing by some Products',
                 requests: constants.getAPI('categories')
             };
-
-            res.status(200).json(response);
+            res.status(500).json(response);
         }
-        else {
-            const response = {
-                error: `Error - cateogryId ${categoryId} not found in Database`,
-                requests: constants.getAPI('categories')
-            };
+        else{
+            const query = Category.findByIdAndRemove(categoryId);
 
-            res.status(404).json(response);
+            query.exec().then(result => {
+                if (result) {
+                    const response = {
+                        message: 'Category deleted successfully',
+                        requests: constants.getAPI('categories')
+                    };
+        
+                    res.status(200).json(response);
+                }
+                else {
+                    const response = {
+                        error: `Error - cateogryId ${categoryId} not found in Database`,
+                        requests: constants.getAPI('categories')
+                    };
+        
+                    res.status(404).json(response);
+                }
+        
+            })
         }
-
     }).catch(err => {
         const response = {
             message: `Error - ${err}`,
@@ -164,7 +183,8 @@ router.delete('/:categoryId', (req, res, next) => {
         };
 
         res.status(500).json(response);
-    });
+    });;
+
 });
 
 
